@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Day01} from '../framework/day01';
 import {Day02} from '../framework/day02';
 import {Day03} from '../framework/day03';
+import {Day04} from '../framework/day04';
 
 @Component({
   selector: 'app-tasks',
@@ -10,9 +11,10 @@ import {Day03} from '../framework/day03';
 })
 export class TasksComponent implements OnInit {
   constructor() {
-    new Day01().runDay();
-    new Day02().runDay();
-    new Day03().runDay();
+    // new Day01().runDay();
+    // new Day02().runDay();
+    // new Day03().runDay();
+    new Day04().runDay();
   }
 
   ngOnInit() {
