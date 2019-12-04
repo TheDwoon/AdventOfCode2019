@@ -65,7 +65,9 @@ export class Day03 extends AbstractDay<string[][]> {
     const cable1 = new Cable(input[0]);
     const cable2 = new Cable(input[1]);
 
-
+    const min = this.intersectCable(cable1, cable2);
+    console.log('T3 > Part 1', min[0]);
+    console.log('T3 > Part 2', min[1]);
   }
 
   protected task2(input: string[][]): void {
@@ -74,18 +76,29 @@ export class Day03 extends AbstractDay<string[][]> {
   }
 
   private intersectCable(c1: Cable, c2: Cable): [number, number] {
+    let minManhattan: number;
+    let minSteps: number;
     for (const p of c1.points) {
       const idx = c2.points.findIndex(e => e.x === p.x && e.y === p.y);
-      if (idx >= 0) {
-        
+      if (idx < 0) {
+        continue;
+      }
+
+      console.log('p1', p, 'p2', c2.points[idx]);
+      if (!minManhattan || p.distance < minManhattan) {
+        minManhattan = p.distance;
+      }
+      if (!minSteps || p.length + c2.points[idx].length < minSteps) {
+        minSteps = p.length + c2.points[idx].length;
       }
     }
-    return null;
+
+    return [minManhattan, minSteps];
   }
 }
 
 class Cable {
-  points: Point[] = [];
+  points: {x: number, y: number, distance: number, length: number}[] = [];
 
   constructor(input: string[]) {
     let currentPoint = {x: 0, y: 0, distance: 0, length: 0};
@@ -108,12 +121,15 @@ class Cable {
           throw new Error('give me a useful direction' + dir);
       }
 
-      const nX = currentPoint.x + dx;
-      const nY = currentPoint.y + dy;
-      const d = nX + nY;
-      const l = currentPoint.length + 1;
-      currentPoint = {x: nX, y: nY, distance: d, length: l};
-      this.points.push(currentPoint);
+      const segmentLength = parseInt(segment.substr(1), 10);
+      for (let i = 0; i < segmentLength; i++) {
+        const nX = currentPoint.x + dx;
+        const nY = currentPoint.y + dy;
+        const d = Math.abs(nX) + Math.abs(nY);
+        const l = currentPoint.length + 1;
+        currentPoint = {x: nX, y: nY, distance: d, length: l};
+        this.points.push(currentPoint);
+      }
     }
   }
 }
