@@ -1,6 +1,8 @@
 import {AbstractDay} from './abstract-day';
 
 export class Day05 extends AbstractDay<number[]> {
+  private moduleId: number;
+
   constructor() {
     super();
   }
@@ -42,10 +44,12 @@ export class Day05 extends AbstractDay<number[]> {
   }
 
   protected task1(input: number[]): void {
+    this.moduleId = 1;
     this.runProgram(input);
   }
 
   protected task2(input: number[]): void {
+    this.moduleId = 5;
     this.runProgram(input);
   }
 
@@ -60,7 +64,7 @@ export class Day05 extends AbstractDay<number[]> {
     } while (preIcp !== postIcp);
   }
 
-  private runInstruction(program: IProgramm): void {
+  private runInstruction(program: IProgram): void {
     const icp = program.icp;
     const opCode = program.memory[icp];
     const instCode = opCode % 100;
@@ -70,6 +74,7 @@ export class Day05 extends AbstractDay<number[]> {
 
     switch (instCode) {
       case 1: {
+        // ADD Instruction
         const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
         const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
         const r = program.memory[icp + 3];
@@ -78,6 +83,7 @@ export class Day05 extends AbstractDay<number[]> {
         return;
       }
       case 2: {
+        // MULTIPLY Instruction
         const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
         const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
         const r = program.memory[icp + 3];
@@ -86,18 +92,69 @@ export class Day05 extends AbstractDay<number[]> {
         return;
       }
       case 3: {
+        // INPUT Instruction
         const r = program.memory[icp + 1];
         program.memory[r] = this.resolveInput();
         program.icp += 2;
         return;
       }
       case 4: {
+        // OUTPUT Instruction
         const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
         this.resolveOutput(a);
         program.icp += 2;
         return;
       }
+      case 5: {
+        // JUMP-IF-TRUE Instruction
+        const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
+        const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
+        if (a !== 0) {
+          program.icp = b;
+        } else {
+          program.icp += 3;
+        }
+        return;
+      }
+      case 6: {
+        // JUMP-IF-FALSE Instruction
+        const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
+        const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
+        if (a === 0) {
+          program.icp = b;
+        } else {
+          program.icp += 3;
+        }
+        return;
+      }
+      case 7: {
+        // LESS-THAN Instruction
+        const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
+        const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
+        const r = program.memory[icp + 3];
+        if (a < b) {
+          program.memory[r] = 1;
+        } else {
+          program.memory[r] = 0;
+        }
+        program.icp += 4;
+        return;
+      }
+      case 8: {
+        // EQUALS Instruction
+        const a = this.resolveParameter(program.memory, program.memory[icp + 1], modeA);
+        const b = this.resolveParameter(program.memory, program.memory[icp + 2], modeB);
+        const r = program.memory[icp + 3];
+        if (a === b) {
+          program.memory[r] = 1;
+        } else {
+          program.memory[r] = 0;
+        }
+        program.icp += 4;
+        return;
+      }
       case 99:
+        // HALT Instruction
         return;
       default:
         throw new Error('Unknown instruction' + instCode);
@@ -120,7 +177,7 @@ export class Day05 extends AbstractDay<number[]> {
   }
 
   private resolveInput(): number {
-    return 1;
+    return this.moduleId;
   }
 
   private resolveOutput(x: number) {
@@ -128,7 +185,7 @@ export class Day05 extends AbstractDay<number[]> {
   }
 }
 
-interface IProgramm {
+interface IProgram {
   memory: number[];
   icp: number;
 }
