@@ -19,7 +19,7 @@ export class Day04 extends AbstractDay<number[]> {
     const end = input[1];
     for (let x = start; x <= end; x++) {
       const arr = this.to6DigitArray(x);
-      if (!this.matchingDigits(arr) || !this.neverDecreasing(arr)) {
+      if (!this.matchingDigits(arr, (occ) => occ >= 2) || !this.neverDecreasing(arr)) {
         continue;
       }
 
@@ -35,7 +35,7 @@ export class Day04 extends AbstractDay<number[]> {
     const end = input[1];
     for (let x = start; x <= end; x++) {
       const arr = this.to6DigitArray(x);
-      if (!this.matchingDigits(arr) || !this.matchingDigitsSpecial(arr) || !this.neverDecreasing(arr)) {
+      if (!this.matchingDigits(arr, (occ) => occ === 2) || !this.neverDecreasing(arr)) {
         continue;
       }
 
@@ -59,27 +59,15 @@ export class Day04 extends AbstractDay<number[]> {
     return Math.floor(x / e) % 10;
   }
 
-  private testNumber(x: number) {
-    const arr = this.to6DigitArray(x);
-    const match = this.matchingDigitsSpecial(arr);
-    console.log('???', x, arr, match);
-  }
-
-  private matchingDigits(x: number[]): boolean {
-    const hist: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    x.forEach(e => hist[e]++);
-    return hist.reduce((prev, curr) => prev > curr ? prev : curr, 0) > 1;
-  }
-
-  private matchingDigitsSpecial(x: number[]): boolean {
+  private matchingDigits(x: number[], ctValidator: (occ: number) => boolean) {
     let n = x[0];
-    let occ = 0;
+    let occ = 1;
     for (let i = 1; i < 6; i++) {
       if (x[i] === n) {
         occ++;
       } else {
-        if (occ === 2) {
-          // something occured twice and is about to change so it matches
+        if (ctValidator(occ)) {
+          // something occurred more than twice and is about to change so it matches
           return true;
         } else {
           n = x[i];
@@ -88,7 +76,7 @@ export class Day04 extends AbstractDay<number[]> {
       }
     }
 
-    return occ === 2;
+    return ctValidator(occ);
   }
 
   private neverDecreasing(x: number[]): boolean {
