@@ -29,7 +29,7 @@ export class Day06 extends AbstractDay<{[planet: string]: [string]}> {
   }
 
   protected task1(starMap: { [p: string]: [string] }): void {
-    const visit = [{planet: 'COM', orbits: 1}];
+    const visit = [{planet: 'COM', orbits: 0}];
     let orbits = 0;
     while (visit.length > 0) {
       const currentPlanet = visit.splice(0, 1)[0];
@@ -37,7 +37,7 @@ export class Day06 extends AbstractDay<{[planet: string]: [string]}> {
       if (orbitingPlanets) {
         orbitingPlanets.forEach(planet => {
           visit.push({planet, orbits: currentPlanet.orbits + 1});
-          orbits += currentPlanet.orbits;
+          orbits += currentPlanet.orbits + 1;
         });
       }
     }
