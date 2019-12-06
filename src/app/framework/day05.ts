@@ -1,4 +1,5 @@
 import {AbstractDay} from './abstract-day';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 export class Day05 extends AbstractDay<number[]> {
   private moduleId: number;
@@ -7,8 +8,8 @@ export class Day05 extends AbstractDay<number[]> {
     super();
   }
 
-  getInput(): string {
-    return '';
+  getInput(): Observable<string> {
+    return new BehaviorSubject('');
   }
 
   parseInput(input: string): number[] {
