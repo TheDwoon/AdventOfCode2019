@@ -2,13 +2,12 @@
 //
 
 #include <iostream>
-//#include "AbstractDay.h"
-//#include "Day05.h"
+#include "Day05.h"
 
 int main()
 {
-    //Day05 day;
-    //day.runDay();
+    Day05 day;
+    day.runDay();
     std::cout << "Hello World!\n";
 }
 

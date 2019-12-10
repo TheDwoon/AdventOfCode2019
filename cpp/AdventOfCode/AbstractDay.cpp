@@ -3,25 +3,24 @@
 #include <fstream>
 #include <streambuf>
 
-template<typename T>
-AbstractDay<T>::AbstractDay(const char* inputFileName) : m_inputFileName(inputFileName)
+AbstractDay::AbstractDay(const char* inputFileName) : m_inputFileName(inputFileName)
 {
 }
 
-template<typename T>
-std::string AbstractDay<T>::getInput()
+std::string AbstractDay::getInput()
 {
   std::fstream fileStream(this->m_inputFileName.c_str());
   std::string fileContent((std::istreambuf_iterator<char>(fileStream)), (std::istreambuf_iterator<char>()));
 
+  std::cout << fileContent << std::endl;
+
   return fileContent;
 }
 
-template<typename T>
-void AbstractDay<T>::runDay()
+void AbstractDay::runDay()
 {
   std::string input = getInput();
-  T* parsedInput = parseInput(input);
+  void* parsedInput = parseInput(input);
   runPart1(parsedInput);
   delete parsedInput;
 

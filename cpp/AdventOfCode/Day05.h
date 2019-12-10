@@ -3,13 +3,13 @@
 #include <cstdio>
 #include <string>
 
-class Day05 : public virtual AbstractDay<int>
+class Day05 : public virtual AbstractDay
 {
 public:
   Day05();
 
-  int* parseInput(std::string& input) override;
-  void runPart1(int* input) override;
-  void runPart2(int* input) override;
+  void* parseInput(std::string& input) override;
+  void runPart1(void* input) override;
+  void runPart2(void* input) override;
 };
 
