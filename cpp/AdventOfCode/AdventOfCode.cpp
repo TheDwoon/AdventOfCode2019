@@ -8,7 +8,6 @@ int main()
 {
     Day05 day;
     day.runDay();
-    std::cout << "Hello World!\n";
 }
 
 // Programm ausführen: STRG+F5 oder "Debuggen" > Menü "Ohne Debuggen starten"

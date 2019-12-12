@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractDay.h"
+#include "IntProcessor.h"
 #include <cstdio>
 #include <string>
 
@@ -20,12 +21,7 @@ public:
 private:
   int m_input;
 
-  void runProgram(intprocessor& proc);
-  void runInstruction(intprocessor& proc);
-  int getDigit(int x, int digit);
-  int* resolveWrite(intprocessor& proc, int* param, int mode);
-  int resolveRead(intprocessor& proc, int* param, int mode);  
-  int resolveInput();
-  void resolveOutput(int x);
+  static void opInputTask1(IntProcessor* proc, int modes);
+  static void opInputTask2(IntProcessor* proc, int modes);
 };
 

@@ -187,7 +187,7 @@ int* IntProcessor::resolveWrite(int* addr, int mode)
 {
   switch (mode)
   {
-  case 1:
+  case 0:
     return m_memory + *addr;
   default:
     return nullptr;
