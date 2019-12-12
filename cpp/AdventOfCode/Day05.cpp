@@ -4,7 +4,7 @@
 #include <vector>
 #include <math.h>
 
-Day05::Day05() : AbstractDay("input/input05.txt")
+Day05::Day05() : AbstractDay("input/input05.txt"), m_input(1)
 {
 }
 
