@@ -6,8 +6,11 @@
 
 int main()
 {
-    Day05 day;
-    day.runDay();
+  std::cout << " >>>>>>>>>>>> Day 05 <<<<<<<<<<" << std::endl;
+  Day05 day;
+  day.runDay();
+
+  std::cout << " >>>>>>>>>>>> Day 07 <<<<<<<<<<" << std::endl;
 }
 
 // Programm ausführen: STRG+F5 oder "Debuggen" > Menü "Ohne Debuggen starten"
