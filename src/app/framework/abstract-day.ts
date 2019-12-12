@@ -27,7 +27,7 @@ export abstract class AbstractDay<T> {
   async runTask2() {
     this.getInput().subscribe(response => {
       const t0 = performance.now();
-      const input = this.parseInput('');
+      const input = this.parseInput(response);
       const t1 = performance.now();
       this.task2(input);
       const t2 = performance.now();

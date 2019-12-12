@@ -46,6 +46,39 @@ export class Day06 extends AbstractDay<{[planet: string]: [string]}> {
   }
 
   protected task2(starMap: { [p: string]: [string] }): void {
-  }
+    const planets = Object.keys(starMap);
+    const reachablePlanets = [...planets.map(planet => starMap[planet])];
+    for (let i = 0; i < planets.length; i++) {
+      const source = planets[i];
+      const destinations = reachablePlanets[i];
+      destinations.forEach(dest => {
+        if (!starMap[dest]) {
+          starMap[dest] = [source];
+        } else {
+          starMap[dest].push(source);
+        }
+      });
+    }
 
+    let hops;
+    const visited = {};
+    const visit = [{planet: 'YOU', steps: 0}];
+    while (visit.length > 0 && Object.keys(visited).length < 100) {
+      const current = visit.splice(0, 1)[0];
+      visited[current.planet] = true;
+
+      if (current.planet === 'SAN') {
+        hops = current.steps;
+        break;
+      }
+
+      starMap[current.planet].forEach(next => {
+        if (!visited[next]) {
+          visit.push({planet: next, steps: current.steps + 1});
+        }
+      });
+    }
+
+    console.log('Day 6 > Task 2', visited, visit);
+  }
 }
