@@ -5,6 +5,9 @@
 #include <sstream>
 #include <math.h>
 
+int Day07::phaseInput;
+int Day07::processorCom;
+
 Day07::Day07() : AbstractDay("input/input07.txt")
 {
 }
@@ -28,28 +31,29 @@ void Day07::runPart1(void* input)
 {
   std::vector<int>* vector = (std::vector<int>*) input;
 
-  int* memoryProc0 = new int[vector->size()];
-  std::memcpy(memoryProc0, vector->data(), sizeof(int) * vector->size());
-  int* memoryProc1 = new int[vector->size()];
-  std::memcpy(memoryProc1, vector->data(), sizeof(int) * vector->size());
-  int* memoryProc2 = new int[vector->size()];
-  std::memcpy(memoryProc2, vector->data(), sizeof(int) * vector->size());
-  int* memoryProc3 = new int[vector->size()];
-  std::memcpy(memoryProc3, vector->data(), sizeof(int) * vector->size());
-  int* memoryProc4 = new int[vector->size()];
-  std::memcpy(memoryProc4, vector->data(), sizeof(int) * vector->size());
+  const int phases[] = {3, 1, 2, 4, 0};
 
-  IntProcessor proc0(memoryProc0);
-  IntProcessor proc1(memoryProc1);
-  IntProcessor proc2(memoryProc2);
-  IntProcessor proc3(memoryProc3);
-  IntProcessor proc4(memoryProc4);
+  // set processor com to 0
+  processorCom = 0;
+  for (int i = 0; i < 5; i++)
+  {
+    phaseInput = phases[i];
+    // copy memory for each processor
+    int* memoryProc = new int[vector->size()];
+    std::memcpy(memoryProc, vector->data(), sizeof(int) * vector->size());
 
-  delete[] memoryProc0;
-  delete[] memoryProc1;
-  delete[] memoryProc2;
-  delete[] memoryProc3;
-  delete[] memoryProc4;
+    // create processors
+    IntProcessor proc(memoryProc);
+    proc.registerInstruction(3, &Day07::opInput);
+    proc.registerInstruction(4, &Day07::opOutput);
+
+    proc.runProgram();
+
+    // free memory of processors
+    delete[] memoryProc;
+  }
+
+  std::cout << "Final Output: " << processorCom << std::endl;
 }
 
 void Day07::runPart2(void* input)
@@ -63,7 +67,7 @@ void Day07::opInput(IntProcessor* proc, int modes)
   int* pc = proc->getPC();
   int* r = proc->resolveWrite(pc + 1, modeA);
 
-  if (phaseInput > -1)
+  if (Day07::phaseInput > -1)
   {
     std::cout << "Reading phase input: " << phaseInput << std::endl;
     *r = phaseInput;

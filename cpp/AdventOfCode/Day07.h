@@ -3,7 +3,7 @@
 #include "IntProcessor.h"
 #include <vector>
 
-class Day07 : AbstractDay
+class Day07 : public AbstractDay
 {
 public:
   Day07();
