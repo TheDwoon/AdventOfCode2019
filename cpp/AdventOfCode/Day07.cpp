@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <math.h>
+#include <algorithm>
 
 int Day07::phaseInput;
 int Day07::processorCom;
@@ -31,33 +32,39 @@ void Day07::runPart1(void* input)
 {
   std::vector<int>* vector = (std::vector<int>*) input;
 
-  const int phases[] = {3, 1, 2, 4, 0};
+  int phases[] = {0, 1, 2, 3, 4};
+  int maxCom = 0;
+  do {
+    // set processor com to 0
+    processorCom = 0;
+    for (int i = 0; i < 5; i++)
+    {
+      phaseInput = phases[i];
+      // copy memory for each processor
+      int* memoryProc = new int[vector->size()];
+      std::memcpy(memoryProc, vector->data(), sizeof(int) * vector->size());
 
-  // set processor com to 0
-  processorCom = 0;
-  for (int i = 0; i < 5; i++)
-  {
-    phaseInput = phases[i];
-    // copy memory for each processor
-    int* memoryProc = new int[vector->size()];
-    std::memcpy(memoryProc, vector->data(), sizeof(int) * vector->size());
+      // create processors
+      IntProcessor proc(memoryProc);
+      proc.registerInstruction(3, &Day07::opInput);
+      proc.registerInstruction(4, &Day07::opOutput);
 
-    // create processors
-    IntProcessor proc(memoryProc);
-    proc.registerInstruction(3, &Day07::opInput);
-    proc.registerInstruction(4, &Day07::opOutput);
+      proc.runProgram();
 
-    proc.runProgram();
+      // free memory of processors
+      delete[] memoryProc;
 
-    // free memory of processors
-    delete[] memoryProc;
-  }
-
-  std::cout << "Final Output: " << processorCom << std::endl;
+      if (processorCom > maxCom) {
+        maxCom = processorCom;
+      }
+    }
+  } while (std::next_permutation(phases, phases + 5));
+  std::cout << "Day 7 > Part 1 " << maxCom << std::endl;
 }
 
 void Day07::runPart2(void* input)
 {
+
 }
 
 void Day07::opInput(IntProcessor* proc, int modes)
@@ -69,13 +76,13 @@ void Day07::opInput(IntProcessor* proc, int modes)
 
   if (Day07::phaseInput > -1)
   {
-    std::cout << "Reading phase input: " << phaseInput << std::endl;
+    //std::cout << "Reading phase input: " << phaseInput << std::endl;
     *r = phaseInput;
     phaseInput = -1;
   }
   else
   {
-    std::cout << "Reading from com: " << processorCom << std::endl;
+    //std::cout << "Reading from com: " << processorCom << std::endl;
     *r = processorCom;
   }
   
@@ -88,7 +95,7 @@ void Day07::opOutput(IntProcessor* proc, int modes)
 
   int* pc = proc->getPC();
   int a = proc->resolveRead(pc + 1, modeA);
-  std::cout << "Writing to com: " << a << std::endl;
+  //std::cout << "Writing to com: " << a << std::endl;
   processorCom = a;
   proc->setPC(pc + 2);
 }
