@@ -72,18 +72,15 @@ void Day07::runPart2(void* input)
 {
   std::vector<int>* vector = (std::vector<int>*) input;
 
-  int memory[] = { 3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,
--5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,
-53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10 };
-  int phases[] = { 9,7,8,5,6 };
+  int phases[] = { 5, 6, 7, 8, 9 };
   int maxCom = 0;
-  //do {
+  do {
     // copy memory for each processor
-    int* memoryProc0 = (int*)std::memcpy(new int[sizeof(memory)], memory, sizeof(memory));
-    int* memoryProc1 = (int*)std::memcpy(new int[sizeof(memory)], memory, sizeof(memory));
-    int* memoryProc2 = (int*)std::memcpy(new int[sizeof(memory)], memory, sizeof(memory));
-    int* memoryProc3 = (int*)std::memcpy(new int[sizeof(memory)], memory, sizeof(memory));
-    int* memoryProc4 = (int*)std::memcpy(new int[sizeof(memory)], memory, sizeof(memory));
+    int* memoryProc0 = (int*)std::memcpy(new int[vector->size()], vector->data(), sizeof(int) * vector->size());
+    int* memoryProc1 = (int*)std::memcpy(new int[vector->size()], vector->data(), sizeof(int) * vector->size());
+    int* memoryProc2 = (int*)std::memcpy(new int[vector->size()], vector->data(), sizeof(int) * vector->size());
+    int* memoryProc3 = (int*)std::memcpy(new int[vector->size()], vector->data(), sizeof(int) * vector->size());
+    int* memoryProc4 = (int*)std::memcpy(new int[vector->size()], vector->data(), sizeof(int) * vector->size());
 
     input0.push(phases[0]);
     input0.push(0);
@@ -167,12 +164,10 @@ void Day07::runPart2(void* input)
       input4.pop();
     }
 
-    std::cout << "Results: ";
-    for (int i = 0; i < results.size(); i++)
+    if (maxCom < results[0])
     {
-      std::cout << results[i] << " ";
+      maxCom = results[0];
     }
-    std::cout << std::endl;
 
     // free memory of processors
     delete[] memoryProc0;
@@ -180,8 +175,8 @@ void Day07::runPart2(void* input)
     delete[] memoryProc2;
     delete[] memoryProc3;
     delete[] memoryProc4;
-  //} while (std::next_permutation(phases, phases + 5));
-  std::cout << "Day 7 > Part 1 " << maxCom << std::endl;
+  } while (std::next_permutation(phases, phases + 5));
+  std::cout << "Day 7 > Part 2 " << maxCom << std::endl;
 }
 
 void Day07::opInputChained0(IntProcessor* proc, int modes)
@@ -194,7 +189,6 @@ void Day07::opInputChained0(IntProcessor* proc, int modes)
   {
     int input = input0.front();
     input0.pop();
-    std::cout << "READ Proc 0: " << input << std::endl;
     opInputChained(proc, modes, input);
   }
 }
@@ -203,7 +197,6 @@ void Day07::opOutputChained0(IntProcessor* proc, int modes)
 {
   int output = opOutputChained(proc, modes);
   input1.push(output);
-  std::cout << "WRITE Proc 0: " << output << std::endl;
 }
 
 
@@ -217,7 +210,6 @@ void Day07::opInputChained1(IntProcessor* proc, int modes)
   {
     int input = input1.front();
     input1.pop();
-    std::cout << "READ Proc 1: " << input << std::endl;
     opInputChained(proc, modes, input);
   }
 }
@@ -239,7 +231,6 @@ void Day07::opInputChained2(IntProcessor* proc, int modes)
   {
     int input = input2.front();
     input2.pop();
-    std::cout << "READ Proc 2: " << input << std::endl;
     opInputChained(proc, modes, input);
   }
 }
@@ -261,7 +252,6 @@ void Day07::opInputChained3(IntProcessor* proc, int modes)
   {
     int input = input3.front();
     input3.pop();
-    std::cout << "READ Proc 3: " << input << std::endl;
     opInputChained(proc, modes, input);
   }
 }
@@ -283,7 +273,6 @@ void Day07::opInputChained4(IntProcessor* proc, int modes)
   {
     int input = input4.front();
     input4.pop();
-    std::cout << "READ Proc 4: " << input << std::endl;
     opInputChained(proc, modes, input);
   }
 }
