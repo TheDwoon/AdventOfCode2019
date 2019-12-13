@@ -125,7 +125,7 @@ void IntProcessor::opEquals(IntProcessor* proc, int modes)
   proc->setPC(pc + 4);
 }
 
-IntProcessor::IntProcessor(int* memory) : m_memory(memory), m_pc(memory)
+IntProcessor::IntProcessor(int* memory) : m_memory(memory), m_pc(memory), m_suspended(false)
 {
   registerInstruction(1, &IntProcessor::opAdd);
   registerInstruction(2, &IntProcessor::opMultiply);
@@ -144,15 +144,19 @@ void IntProcessor::registerInstruction(int instructionCode, InstructionExecutor 
   m_instructions[instructionCode] = executor;
 }
 
-void IntProcessor::runProgram()
+bool IntProcessor::runProgram()
 {
+  bool run = false;
   int* oldPC = nullptr;
   int* newPC = nullptr;
   do {
     oldPC = m_pc;
     runInstruction();
     newPC = m_pc;
-  } while (oldPC != newPC);
+    run = run || oldPC != newPC;
+  } while (oldPC != newPC && !m_suspended);
+
+  return run;
 }
 
 void IntProcessor::runInstruction()
@@ -207,5 +211,10 @@ void IntProcessor::setPC(int* pc)
 int* IntProcessor::getMemory()
 {
   return m_memory;
+}
+
+void IntProcessor::suspend(bool suspend)
+{
+  m_suspended = suspend;
 }
 

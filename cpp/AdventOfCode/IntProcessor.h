@@ -9,6 +9,7 @@ class IntProcessor
 private:
   int* m_memory;
   int* m_pc;
+  bool m_suspended;
   std::map<int, InstructionExecutor> m_instructions;
 
   // ready to use instructions
@@ -24,7 +25,7 @@ private:
 public:
   IntProcessor(int* m_memory);
   void registerInstruction(int instructionCode, InstructionExecutor executor);
-  void runProgram();
+  bool runProgram();
   void runInstruction();
   int getMode(int modes, int num);
   int resolveRead(int* addr, int mode);
@@ -32,4 +33,5 @@ public:
   int* getPC();
   void setPC(int* pc);
   int* getMemory();
+  void suspend(bool suspend = true);
 };
