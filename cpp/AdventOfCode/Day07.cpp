@@ -51,7 +51,7 @@ void Day07::runPart1(void* input)
       std::memcpy(memoryProc, vector->data(), sizeof(int) * vector->size());
 
       // create processors
-      IntProcessor proc(memoryProc);
+      IntProcessor proc(memoryProc, vector->size());
       proc.registerInstruction(3, &Day07::opInput);
       proc.registerInstruction(4, &Day07::opOutput);
 
@@ -90,19 +90,19 @@ void Day07::runPart2(void* input)
     input4.push(phases[4]);
 
     // create processors
-    IntProcessor proc0(memoryProc0);
+    IntProcessor proc0(memoryProc0, vector->size());
     proc0.registerInstruction(3, &Day07::opInputChained0);
     proc0.registerInstruction(4, &Day07::opOutputChained0);
-    IntProcessor proc1(memoryProc1);
+    IntProcessor proc1(memoryProc1, vector->size());
     proc1.registerInstruction(3, &Day07::opInputChained1);
     proc1.registerInstruction(4, &Day07::opOutputChained1);
-    IntProcessor proc2(memoryProc2);
+    IntProcessor proc2(memoryProc2, vector->size());
     proc2.registerInstruction(3, &Day07::opInputChained2);
     proc2.registerInstruction(4, &Day07::opOutputChained2);
-    IntProcessor proc3(memoryProc3);
+    IntProcessor proc3(memoryProc3, vector->size());
     proc3.registerInstruction(3, &Day07::opInputChained3);
     proc3.registerInstruction(4, &Day07::opOutputChained3);
-    IntProcessor proc4(memoryProc4);
+    IntProcessor proc4(memoryProc4, vector->size());
     proc4.registerInstruction(3, &Day07::opInputChained4);
     proc4.registerInstruction(4, &Day07::opOutputChained4);
 
@@ -287,8 +287,8 @@ void Day07::opInputChained(IntProcessor* proc, int modes, int input)
 {
   int modeA = proc->getMode(modes, 0);
 
-  int* pc = proc->getPC();
-  int* r = proc->resolveWrite(pc + 1, modeA);
+  int64_t* pc = proc->getPC();
+  int64_t* r = proc->resolveWrite(pc + 1, modeA);
   *r = input;
 
   proc->setPC(pc + 2);
@@ -298,8 +298,8 @@ int Day07::opOutputChained(IntProcessor* proc, int modes)
 {
   int modeA = proc->getMode(modes, 0);
 
-  int* pc = proc->getPC();
-  int a = proc->resolveRead(pc + 1, modeA);
+  int64_t* pc = proc->getPC();
+  int64_t a = proc->resolveRead(pc + 1, modeA);
   proc->setPC(pc + 2);
   return a;
 }
@@ -308,8 +308,8 @@ void Day07::opInput(IntProcessor* proc, int modes)
 {
   int modeA = proc->getMode(modes, 0);
 
-  int* pc = proc->getPC();
-  int* r = proc->resolveWrite(pc + 1, modeA);
+  int64_t* pc = proc->getPC();
+  int64_t* r = proc->resolveWrite(pc + 1, modeA);
 
   if (Day07::phaseInput > -1)
   {
@@ -330,8 +330,8 @@ void Day07::opOutput(IntProcessor* proc, int modes)
 {
   int modeA = proc->getMode(modes, 0);
 
-  int* pc = proc->getPC();
-  int a = proc->resolveRead(pc + 1, modeA);
+  int64_t* pc = proc->getPC();
+  int64_t a = proc->resolveRead(pc + 1, modeA);
   //std::cout << "Writing to com: " << a << std::endl;
   processorCom = a;
   proc->setPC(pc + 2);

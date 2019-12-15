@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <cstdint>
 
 class IntProcessor;
 typedef void (*InstructionExecutor)(IntProcessor*, int modes);
@@ -7,8 +8,9 @@ typedef void (*InstructionExecutor)(IntProcessor*, int modes);
 class IntProcessor
 {
 private:
-  int* m_memory;
-  int* m_pc;
+  int64_t* m_memory;
+  int64_t* m_pc;
+  int64_t* m_relativeBase;
   bool m_suspended;
   std::map<int, InstructionExecutor> m_instructions;
 
@@ -21,17 +23,23 @@ private:
   static void opJumpIfFalse(IntProcessor* proc, int modes);
   static void opLessThan(IntProcessor* proc, int modes);
   static void opEquals(IntProcessor* proc, int modes);
+  static void opModifyRelativeBase(IntProcessor* proc, int modes);
 
 public:
-  IntProcessor(int* m_memory);
+  IntProcessor(int* m_memory, unsigned long size, unsigned long additonalMemory = 0);
+  virtual ~IntProcessor();
   void registerInstruction(int instructionCode, InstructionExecutor executor);
   bool runProgram();
   void runInstruction();
   int getMode(int modes, int num);
-  int resolveRead(int* addr, int mode);
-  int* resolveWrite(int* addr, int mode);
-  int* getPC();
-  void setPC(int* pc);
-  int* getMemory();
+  int64_t resolveRead(int64_t* addr, int mode);
+  int64_t* resolveWrite(int64_t* addr, int mode);
+  int64_t* getPC();
+  void setPC(int64_t* pc);
+  int64_t* getMemory();
+  int64_t* getRelativeBase();
+  void setRelativeBase(int64_t* relativeBase);
   void suspend(bool suspend = true);
+
+  static void performProcessorInput(IntProcessor* proc, int modes, int64_t input);
 };

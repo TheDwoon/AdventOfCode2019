@@ -4,18 +4,28 @@
 #include <iostream>
 #include "Day05.h"
 #include "Day07.h"
+#include "Day08.h"
+#include "Day09.h"
 
 int main()
 {
-  
-  /*std::cout << " >>>>>>>>>>>> Day 05 <<<<<<<<<<" << std::endl;
+  /*
+  std::cout << " >>>>>>>>>>>> Day 05 <<<<<<<<<<" << std::endl;
   Day05 day;
-  day.runDay();*/
+  day.runDay();
   
 
   std::cout << " >>>>>>>>>>>> Day 07 <<<<<<<<<<" << std::endl;
   Day07 day07;
   day07.runDay();
+
+  std::cout << " >>>>>>>>>>>> Day 08 <<<<<<<<<<" << std::endl;
+  Day08 day08;
+  day08.runDay();
+  */
+  std::cout << " >>>>>>>>>>>> Day 09 <<<<<<<<<<" << std::endl;
+  Day09 day09;
+  day09.runDay();
 }
 
 // Programm ausführen: STRG+F5 oder "Debuggen" > Menü "Ohne Debuggen starten"
