@@ -154,6 +154,7 @@
     <ClCompile Include="Day08.cpp" />
     <ClCompile Include="Day09.cpp" />
     <ClCompile Include="Day10.cpp" />
+    <ClCompile Include="Day11.cpp" />
     <ClCompile Include="IntProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="Day08.h" />
     <ClInclude Include="Day09.h" />
     <ClInclude Include="Day10.h" />
+    <ClInclude Include="Day11.h" />
     <ClInclude Include="IntProcessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

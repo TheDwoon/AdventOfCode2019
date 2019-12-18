@@ -1,9 +1,10 @@
 #pragma once
 #include <map>
 #include <cstdint>
+#include <functional>
 
-class IntProcessor;
-typedef void (*InstructionExecutor)(IntProcessor*, int modes);
+//template <typename T>
+//using InstructionExecutor = void (*)(IntProcessor<T>*, int modes);
 
 class IntProcessor
 {
@@ -12,7 +13,7 @@ private:
   int64_t* m_pc;
   int64_t* m_relativeBase;
   bool m_suspended;
-  std::map<int, InstructionExecutor> m_instructions;
+  std::map<int, std::function<void(IntProcessor*, int)>> m_instructions;
 
   // ready to use instructions
   static void opHalt(IntProcessor* proc, int modes);
@@ -28,7 +29,7 @@ private:
 public:
   IntProcessor(int* m_memory, unsigned long size, unsigned long additonalMemory = 0);
   virtual ~IntProcessor();
-  void registerInstruction(int instructionCode, InstructionExecutor executor);
+  void registerInstruction(int instructionCode, std::function<void(IntProcessor*, int)> executor);
   bool runProgram();
   void runInstruction();
   int getMode(int modes, int num);

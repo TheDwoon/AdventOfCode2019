@@ -165,7 +165,7 @@ IntProcessor::~IntProcessor()
   delete[] m_memory;
 }
 
-void IntProcessor::registerInstruction(int instructionCode, InstructionExecutor executor)
+void IntProcessor::registerInstruction(int instructionCode, std::function<void(IntProcessor*, int)> executor)
 {
   m_instructions[instructionCode] = executor;
 }
@@ -191,7 +191,7 @@ void IntProcessor::runInstruction()
   const int instructionCode = opCode % 100;
   const int modes = opCode / 100;
 
-  InstructionExecutor executor = m_instructions.at(instructionCode);
+  std::function<void(IntProcessor*, int)> executor = m_instructions.at(instructionCode);
   executor(this, modes);
 }
 
