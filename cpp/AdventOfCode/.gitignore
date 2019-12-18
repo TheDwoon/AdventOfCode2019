@@ -1,3 +1,6 @@
 .vs/
 AdventOfCode.vcxproj.user
+AdventOfCode.vcxproj.filters
 x64/
+Debug/
+Release/
