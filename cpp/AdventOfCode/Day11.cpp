@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include "IntProcessor.h"
 
 Day11::Day11() : AbstractDay("input/input11.txt")
 {
@@ -24,7 +25,8 @@ void* Day11::parseInput(std::string& input)
 
 void Day11::runPart1(void* input)
 {
-
+  std::vector<int>* vector = (std::vector<int>*)input;
+  IntProcessor proc
 }
 
 void Day11::runPart2(void* input)
