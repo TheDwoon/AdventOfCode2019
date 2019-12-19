@@ -147,17 +147,17 @@ IntProcessor::IntProcessor(int* memory, unsigned long size, unsigned long addito
   m_pc = m_memory;
   m_relativeBase = m_memory;
 
-  registerInstruction(1, &IntProcessor::opAdd);
-  registerInstruction(2, &IntProcessor::opMultiply);
+  registerInstruction(IntProcessor::OP_ADD, &IntProcessor::opAdd);
+  registerInstruction(IntProcessor::OP_MULT, &IntProcessor::opMultiply);
 
-  registerInstruction(4, &IntProcessor::opOutput);
-  registerInstruction(5, &IntProcessor::opJumpIfTrue);
-  registerInstruction(6, &IntProcessor::opJumpIfFalse);
-  registerInstruction(7, &IntProcessor::opLessThan);
-  registerInstruction(8, &IntProcessor::opEquals);
-  registerInstruction(9, &IntProcessor::opModifyRelativeBase);
+  registerInstruction(IntProcessor::OP_OUTPUT, &IntProcessor::opOutput);
+  registerInstruction(IntProcessor::OP_JUMP_IF_TRUE, &IntProcessor::opJumpIfTrue);
+  registerInstruction(IntProcessor::OP_JUMP_IF_FALSE, &IntProcessor::opJumpIfFalse);
+  registerInstruction(IntProcessor::OP_LESS_THAN, &IntProcessor::opLessThan);
+  registerInstruction(IntProcessor::OP_EQUALS, &IntProcessor::opEquals);
+  registerInstruction(IntProcessor::OP_MODIFY_RELATIVE_BASE, &IntProcessor::opModifyRelativeBase);
 
-  registerInstruction(99, &IntProcessor::opHalt);
+  registerInstruction(IntProcessor::OP_HALT, &IntProcessor::opHalt);
 }
 
 IntProcessor::~IntProcessor()
@@ -267,4 +267,15 @@ void IntProcessor::performProcessorInput(IntProcessor* proc, int modes, int64_t 
   *r = input;
 
   proc->setPC(pc + 2);
+}
+
+int64_t IntProcessor::performProcessorOutput(IntProcessor* proc, int modes)
+{
+  int modeA = proc->getMode(modes, 0);
+
+  int64_t* pc = proc->getPC();
+  int64_t a = proc->resolveRead(pc + 1, modeA);  
+  proc->setPC(pc + 2);
+
+  return a;
 }

@@ -43,4 +43,17 @@ public:
   void suspend(bool suspend = true);
 
   static void performProcessorInput(IntProcessor* proc, int modes, int64_t input);
+  static int64_t performProcessorOutput(IntProcessor* proc, int modes);
+
+  static const int OP_ADD = 1;
+  static const int OP_MULT = 2;
+  static const int OP_INPUT = 3;
+  static const int OP_OUTPUT = 4;
+  static const int OP_JUMP_IF_TRUE = 5;
+  static const int OP_JUMP_IF_FALSE = 6;
+  static const int OP_LESS_THAN = 7;
+  static const int OP_EQUALS = 8;
+  static const int OP_MODIFY_RELATIVE_BASE = 9;
+
+  static const int OP_HALT = 99;
 };
