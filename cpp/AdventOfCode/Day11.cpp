@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <map>
+#include <algorithm>
 #include "IntProcessor.h"
 
 enum TileColor { BLACK, WHITE };
@@ -14,10 +15,10 @@ struct Position {
   int y;
 
   bool operator<(const Position& other) const {
-    if (x == other.x)
-      return y < other.y;
-    else
+    if (y == other.y)
       return x < other.x;
+    else
+      return y < other.y;
   }
 };
 
@@ -51,15 +52,16 @@ struct HullRobot {
   void opOutput(IntProcessor* proc, int modes)
   {
     int64_t output = IntProcessor::performProcessorOutput(proc, modes);
-    
+
     if (outputState == 0)
     {
-      TileColor paintColor = output == 0 ? TileColor::BLACK : TileColor::WHITE;
+      TileColor paintColor = ((output == 0) ? TileColor::BLACK : TileColor::WHITE);
       auto it = tiles.find(position);
       if (it == tiles.end())
         paintedAtLeastOnce++;
 
       tiles[position] = paintColor;
+
       outputState = 1;
     }
     else
@@ -84,6 +86,8 @@ struct HullRobot {
         position.x++;
         break;
       }
+
+      std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
 
       outputState = 0;
     }
@@ -111,6 +115,7 @@ void* Day11::parseInput(std::string& input)
 
 void Day11::runPart1(void* input)
 {
+  return;
   std::vector<int>* vector = (std::vector<int>*)input;
 
   HullRobot robot;
@@ -121,13 +126,55 @@ void Day11::runPart1(void* input)
 
   proc.runProgram();
 
-  Position p1;
-  Position p2;
-  bool a = p1 < p2;
-
   std::cout << "Painted tiles: " << robot.paintedAtLeastOnce << std::endl;
 }
 
 void Day11::runPart2(void* input)
 {
+  std::vector<int>* vector = (std::vector<int>*)input;
+
+  HullRobot robot;
+  robot.tiles[Position{ 0, 0 }] = TileColor::WHITE;
+  IntProcessor proc(vector->data(), vector->size());
+
+  proc.registerInstruction(IntProcessor::OP_INPUT, std::bind(&HullRobot::opInput, &robot, std::placeholders::_1, std::placeholders::_2));
+  proc.registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&HullRobot::opOutput, &robot, std::placeholders::_1, std::placeholders::_2));
+
+  proc.runProgram();
+
+  std::cout << "PT: " << robot.paintedAtLeastOnce << std::endl;
+  
+  int minX = INT_MAX;
+  int maxX = INT_MIN;
+  int minY = INT_MAX;
+  int maxY = INT_MIN;
+
+  for (auto it = robot.tiles.begin(); it != robot.tiles.end(); ++it) {
+    Position pos = it->first;
+    minX = std::min(minX, pos.x);
+    maxX = std::max(maxX, pos.x);
+    minY = std::min(minY, pos.y);
+    maxY = std::max(maxY, pos.y);
+  }
+
+  std::cout << "x: " << minX << ", " << maxX << std::endl;
+  std::cout << "y: " << minY << ", " << maxY << std::endl;
+
+  if (robot.tiles.size() == 0)
+    return;
+
+  for (int y = minY; y < maxY; y++) {
+    for (int x = minX; x < maxX; x++) {
+      auto it = robot.tiles.find(Position{ x, y });
+      char c;
+      if (it == robot.tiles.end())
+        c = ' ';
+      else
+        c = it->second == TileColor::BLACK ? '.' : '#';
+
+      std::cout << c;
+    }
+
+    std::cout << std::endl;
+  }
 }

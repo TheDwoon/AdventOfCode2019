@@ -140,7 +140,7 @@ IntProcessor::IntProcessor(int* memory, unsigned long size, unsigned long addito
 {
   m_memory = new int64_t[size + additonalMemory];
   for (unsigned long i = 0; i < size; i++)
-    m_memory[i] = static_cast<long>(memory[i]);
+    m_memory[i] = static_cast<int64_t>(memory[i]);
   for (unsigned long i = size; i < size + additonalMemory; i++)
     m_memory[i] = 0;
 
