@@ -74,20 +74,20 @@ struct HullRobot {
 
       switch (facing) {
       case UP:
-        position.y++;
+        position.y--;
         break;
       case LEFT:
         position.x--;
         break;
       case DOWN:
-        position.y--;
+        position.y++;
         break;
       case RIGHT:
         position.x++;
         break;
       }
 
-      std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
+      // std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
 
       outputState = 0;
     }
@@ -115,11 +115,10 @@ void* Day11::parseInput(std::string& input)
 
 void Day11::runPart1(void* input)
 {
-  return;
   std::vector<int>* vector = (std::vector<int>*)input;
 
   HullRobot robot;
-  IntProcessor proc(vector->data(), vector->size());
+  IntProcessor proc(vector->data(), vector->size(), 512);
 
   proc.registerInstruction(IntProcessor::OP_INPUT, std::bind(&HullRobot::opInput, &robot, std::placeholders::_1, std::placeholders::_2));
   proc.registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&HullRobot::opOutput, &robot, std::placeholders::_1, std::placeholders::_2));
@@ -135,7 +134,7 @@ void Day11::runPart2(void* input)
 
   HullRobot robot;
   robot.tiles[Position{ 0, 0 }] = TileColor::WHITE;
-  IntProcessor proc(vector->data(), vector->size());
+  IntProcessor proc(vector->data(), vector->size(), 512);
 
   proc.registerInstruction(IntProcessor::OP_INPUT, std::bind(&HullRobot::opInput, &robot, std::placeholders::_1, std::placeholders::_2));
   proc.registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&HullRobot::opOutput, &robot, std::placeholders::_1, std::placeholders::_2));

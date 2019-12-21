@@ -136,7 +136,7 @@ void IntProcessor::opModifyRelativeBase(IntProcessor* proc, int modes)
   proc->setPC(pc + 2);
 }
 
-IntProcessor::IntProcessor(int* memory, unsigned long size, unsigned long additonalMemory) : m_suspended(false)
+IntProcessor::IntProcessor(int* memory, unsigned long size, unsigned long additonalMemory) : m_suspended(false), m_memSize(size + additonalMemory)
 {
   m_memory = new int64_t[size + additonalMemory];
   for (unsigned long i = 0; i < size; i++)
@@ -205,10 +205,22 @@ int64_t IntProcessor::resolveRead(int64_t* addr, int mode)
 {
   switch (mode) {
   case 0:
+#ifdef CHECK_BOUNDS
+    if (*addr < 0 || *addr >= m_memSize)
+      std::cout << "WARN: Adressed Read out of bounds: " << *addr << "/" << m_memSize << std::endl;
+#endif
     return m_memory[*addr];
   case 1:
+#ifdef CHECK_BOUNDS
+    if (addr < m_memory || addr >= m_memory + m_memSize)
+      std::cout << "WARN: Immidiate Read out of bounds: " << addr << "/" << (m_memory + m_memSize) << std::endl;
+#endif
     return *addr;
   case 2:
+#ifdef CHECK_BOUNDS
+    if (m_relativeBase + *addr < m_memory || m_relativeBase + *addr >= m_memory + m_memSize)
+      std::cout << "WARN: Relative Read out of bounds: " << (m_relativeBase + *addr) << "/" << (m_memory + m_memSize) << std::endl;
+#endif
     return *(m_relativeBase + *addr);
   default:
     return 0;
@@ -220,8 +232,16 @@ int64_t* IntProcessor::resolveWrite(int64_t* addr, int mode)
   switch (mode)
   {
   case 0:
+#ifdef CHECK_BOUNDS
+    if (*addr < 0 || *addr >= m_memSize)
+      std::cout << "WARN: Adressed Write out of bounds: " << *addr << "/" << m_memSize << std::endl;
+#endif
     return m_memory + *addr;
   case 2:
+#ifdef CHECK_BOUNDS
+    if (m_relativeBase + *addr < m_memory || m_relativeBase + *addr >= m_memory + m_memSize)
+      std::cout << "WARN: Relative Write out of bounds: " << (m_relativeBase + *addr) << "/" << (m_memory + m_memSize) << std::endl;
+#endif
     return m_relativeBase + *addr;
   default:
     return nullptr;
