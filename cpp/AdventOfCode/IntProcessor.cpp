@@ -132,6 +132,7 @@ void IntProcessor::opModifyRelativeBase(IntProcessor* proc, int modes)
   int64_t* pc = proc->getPC();
   int64_t a = proc->resolveRead(pc + 1, modeA);
 
+  //std::cout << "Modify relative base: " << proc->getRelativeBase() << "+" << a << std::endl;
   proc->setRelativeBase(proc->getRelativeBase() + a);
   proc->setPC(pc + 2);
 }

@@ -23,11 +23,11 @@ int main()
   std::cout << " >>>>>>>>>>>> Day 08 <<<<<<<<<<" << std::endl;
   Day08 day08;
   day08.runDay();
-
+  
   std::cout << " >>>>>>>>>>>> Day 09 <<<<<<<<<<" << std::endl;
   Day09 day09;
   day09.runDay();
-
+  
   std::cout << " >>>>>>>>>>>> Day 10 <<<<<<<<<<" << std::endl;
   Day10 day10;
   day10.runDay();
