@@ -87,7 +87,7 @@ struct HullRobot {
         break;
       }
 
-      //std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
+      // std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
 
       outputState = 0;
     }

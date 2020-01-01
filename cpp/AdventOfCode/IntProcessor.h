@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <functional>
 
-//template <typename T>
-//using InstructionExecutor = void (*)(IntProcessor<T>*, int modes);
+#define CHECK_BOUNDS
 
 class IntProcessor
 {
@@ -12,6 +11,7 @@ private:
   int64_t* m_memory;
   int64_t* m_pc;
   int64_t* m_relativeBase;
+  int64_t m_memSize;
   bool m_suspended;
   std::map<int, std::function<void(IntProcessor*, int)>> m_instructions;
 
