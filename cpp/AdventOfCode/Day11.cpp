@@ -174,6 +174,8 @@ void Day11::runPart2(void* input)
 
   proc.runProgram();
 
+  std::cout << "OP: " << *(proc.getPC()) << std::endl;
+
   std::cout << "PT: " << robot.paintedAtLeastOnce << std::endl;
   
   int minX = INT_MAX;

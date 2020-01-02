@@ -204,49 +204,73 @@ int IntProcessor::getMode(int modes, int num)
 
 int64_t IntProcessor::resolveRead(int64_t* addr, int mode)
 {
+  int64_t* readAddr = nullptr;
+
   switch (mode) {
   case 0:
-#ifdef CHECK_BOUNDS
-    if (*addr < 0 || *addr >= m_memSize)
-      std::cout << "WARN: Adressed Read out of bounds: " << *addr << "/" << m_memSize << std::endl;
-#endif
-    return m_memory[*addr];
+    readAddr = m_memory + *addr;
+    break;
   case 1:
-#ifdef CHECK_BOUNDS
-    if (addr < m_memory || addr >= m_memory + m_memSize)
-      std::cout << "WARN: Immidiate Read out of bounds: " << addr << "/" << (m_memory + m_memSize) << std::endl;
-#endif
-    return *addr;
+    readAddr = addr;
+    break;
   case 2:
-#ifdef CHECK_BOUNDS
-    if (m_relativeBase + *addr < m_memory || m_relativeBase + *addr >= m_memory + m_memSize)
-      std::cout << "WARN: Relative Read out of bounds: " << (m_relativeBase + *addr) << "/" << (m_memory + m_memSize) << std::endl;
-#endif
-    return *(m_relativeBase + *addr);
+    readAddr = m_relativeBase + *addr;
+    break;
   default:
     return 0;
   }
+
+#ifdef CHECK_BOUNDS
+  if (readAddr < m_memory || readAddr >= m_memory + m_memSize)
+  {
+    std::cout << "READ OUT OF BOUNDS: [";
+    std::cout << "readAddress = " << readAddr;
+    std::cout << ", addr = " << addr;
+    std::cout << ", mode = " << mode;
+    std::cout << ", memStart = " << m_memory;
+    std::cout << ", memEnd = " << m_memory + m_memSize;    
+    std::cout << "]" << std::endl;
+  }
+#endif
+
+  return *readAddr;
 }
 
 int64_t* IntProcessor::resolveWrite(int64_t* addr, int mode)
 {
+  int64_t* writeAddr = nullptr;
+
   switch (mode)
   {
   case 0:
-#ifdef CHECK_BOUNDS
-    if (*addr < 0 || *addr >= m_memSize)
-      std::cout << "WARN: Adressed Write out of bounds: " << *addr << "/" << m_memSize << std::endl;
-#endif
-    return m_memory + *addr;
+    writeAddr = m_memory + *addr;
+    break;
+  case 1:
+    // this case should not occur
+    writeAddr = nullptr;
+    break;
   case 2:
-#ifdef CHECK_BOUNDS
-    if (m_relativeBase + *addr < m_memory || m_relativeBase + *addr >= m_memory + m_memSize)
-      std::cout << "WARN: Relative Write out of bounds: " << (m_relativeBase + *addr) << "/" << (m_memory + m_memSize) << std::endl;
-#endif
-    return m_relativeBase + *addr;
+    writeAddr = m_relativeBase + *addr;
+    break;
   default:
     return nullptr;
   }
+
+#ifdef CHECK_BOUNDS
+  if (writeAddr < m_memory || writeAddr >= m_memory + m_memSize)
+  {
+    std::cout << "WRITE OUT OF BOUNDS: [";
+    std::cout << "writeAddress = " << writeAddr;
+    std::cout << ", addr = " << addr;
+    std::cout << ", mode = " << mode;
+    std::cout << ", memStart = " << m_memory;
+    std::cout << ", memEnd = " << m_memory + m_memSize;
+    std::cout << "]" << std::endl;
+  }
+#endif // CHECK_BOUNDS
+
+
+  return writeAddr;
 }
 
 int64_t* IntProcessor::getPC()
