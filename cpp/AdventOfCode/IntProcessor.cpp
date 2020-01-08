@@ -35,13 +35,27 @@ void IntProcessor::opMultiply(IntProcessor* proc, int modes)
   proc->setPC(pc + 4);
 }
 
+void IntProcessor::opInput(IntProcessor* proc, int modes) {
+  if(m_inputs.size() > 0)
+  {
+    int64_t input = m_inputs.front();
+    m_inputs.pop_front();
+    IntProcessor::performProcessorInput(proc, modes, input);
+  }
+  else
+  {
+    // no inputs -> suspend processor
+    proc->suspend(true);
+  }
+}
+
 void IntProcessor::opOutput(IntProcessor* proc, int modes)
 {
   int modeA = proc->getMode(modes, 0);
 
   int64_t* pc = proc->getPC();
   int64_t a = proc->resolveRead(pc + 1, modeA);
-  std::cout << "Processor: " << a << std::endl;
+  m_outputs.push_back(a);
   proc->setPC(pc + 2);
 }
 
@@ -150,8 +164,8 @@ IntProcessor::IntProcessor(int* memory, unsigned long size, unsigned long addito
 
   registerInstruction(IntProcessor::OP_ADD, &IntProcessor::opAdd);
   registerInstruction(IntProcessor::OP_MULT, &IntProcessor::opMultiply);
-
-  registerInstruction(IntProcessor::OP_OUTPUT, &IntProcessor::opOutput);
+  registerInstruction(IntProcessor::OP_INPUT, std::bind(&IntProcessor::opInput, this, std::placeholders::_1, std::placeholders::_2));
+  registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&IntProcessor::opOutput, this, std::placeholders::_1, std::placeholders::_2));
   registerInstruction(IntProcessor::OP_JUMP_IF_TRUE, &IntProcessor::opJumpIfTrue);
   registerInstruction(IntProcessor::OP_JUMP_IF_FALSE, &IntProcessor::opJumpIfFalse);
   registerInstruction(IntProcessor::OP_LESS_THAN, &IntProcessor::opLessThan);
@@ -173,27 +187,37 @@ void IntProcessor::registerInstruction(int instructionCode, std::function<void(I
 
 bool IntProcessor::runProgram()
 {
-  bool run = false;
-  int64_t* oldPC = nullptr;
-  int64_t* newPC = nullptr;
-  do {
-    oldPC = m_pc;
+  while (!isSuspended() && !isHalted())
+  {
     runInstruction();
-    newPC = m_pc;
-    run = run || oldPC != newPC;
-  } while (oldPC != newPC && !m_suspended);
+  }
 
-  return run;
+  return isHalted();
 }
 
 void IntProcessor::runInstruction()
 {
-  const long opCode = *m_pc;
+  const int64_t opCode = *m_pc;
   const int instructionCode = opCode % 100;
   const int modes = opCode / 100;
 
   std::function<void(IntProcessor*, int)> executor = m_instructions.at(instructionCode);
   executor(this, modes);
+}
+
+int64_t IntProcessor::getOpCode() const
+{
+  return *m_pc;
+}
+
+int IntProcessor::getInstruction() const
+{
+  return getOpCode() % 100;
+}
+
+int IntProcessor::getModes() const
+{
+  return getOpCode() / 100;
 }
 
 int IntProcessor::getMode(int modes, int num)
@@ -298,6 +322,16 @@ void IntProcessor::setRelativeBase(int64_t* relativeBase)
   m_relativeBase = relativeBase;
 }
 
+bool IntProcessor::isSuspended()
+{
+  return m_suspended;
+}
+
+bool IntProcessor::isHalted()
+{
+  return getInstruction() == IntProcessor::OP_HALT;
+}
+
 void IntProcessor::suspend(bool suspend)
 {
   m_suspended = suspend;
@@ -323,4 +357,29 @@ int64_t IntProcessor::performProcessorOutput(IntProcessor* proc, int modes)
   proc->setPC(pc + 2);
 
   return a;
+}
+
+IntProcessor& operator<<(IntProcessor& proc, int64_t input)
+{
+  proc.m_inputs.push_back(input);
+  proc.suspend(false);
+
+  return proc;
+}
+
+IntProcessor& operator>>(IntProcessor& proc, int64_t& output)
+{
+  if (proc.m_outputs.empty())
+    proc.runProgram();
+
+  if (proc.m_outputs.empty())
+  {
+    std::cout << "Empty processor output accessed!" << std::endl;
+    output = 0;
+    return proc;
+  }
+
+  output = proc.m_outputs.front();
+  proc.m_outputs.pop_front();
+  return proc;
 }
