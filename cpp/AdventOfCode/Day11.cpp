@@ -6,7 +6,7 @@
 #include <algorithm>
 #include "IntProcessor.h"
 
-typedef char Facing;
+typedef short Facing;
 
 struct Position {
   int x;
@@ -77,6 +77,7 @@ void* Day11::parseInput(std::string& input)
 
 void Day11::runPart1(void* input)
 {
+  return;
   std::vector<int>* vector = (std::vector<int>*)input;
 
   unsigned int paintedAtLeastOnce = 0;
@@ -152,14 +153,23 @@ void Day11::runPart2(void* input)
   robot.tiles[robot.position] = 1;
   IntProcessor proc(vector->data(), vector->size(), 1024);
 
+  int64_t tileColor;
   int64_t paintColor;
   int64_t turnDirection;
   while (!proc.isHalted())
-  {    
-    proc << robot.tiles[robot.position];
+  {
+    tileColor = robot.tiles[robot.position];
+    proc << tileColor;
     proc >> paintColor >> turnDirection;
 
     robot.tiles[robot.position] = paintColor;
+
+    std::cout
+      << "c: " << tileColor
+      << " (" << robot.position.x << ", " << robot.position.y << ", f: " << robot.facing << ")"
+      << " t: " << turnDirection
+      << " p: " << robot.tiles[robot.position] << std::endl;
+
     if (turnDirection == 0)
       robot.turnLeft();
     else if (turnDirection == 1)
@@ -189,8 +199,8 @@ void Day11::runPart2(void* input)
   if (robot.tiles.size() == 0)
     return;
 
-  for (int y = minY; y <= maxY; y++) {
-    for (int x = minX; x <= maxX; x++) {
+  for (int y = minY - 3; y <= maxY + 3; y++) {
+    for (int x = minX - 3; x <= maxX + 3; x++) {
       auto it = robot.tiles.find(Position{ x, y });
       char c;
       if (it == robot.tiles.end())
