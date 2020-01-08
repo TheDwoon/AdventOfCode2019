@@ -6,8 +6,6 @@
 #include <algorithm>
 #include "IntProcessor.h"
 
-enum TileColor { BLACK, WHITE };
-
 typedef char Facing;
 
 struct Position {
@@ -30,66 +28,30 @@ struct HullRobot {
 
   Position position{0, 0};
   Facing facing = UP;
-  std::map<Position, TileColor> tiles;
-  int paintedAtLeastOnce = 0;
+  std::map<Position, short> tiles;
 
-  void opInput(IntProcessor* proc, int modes)
-  {
-    TileColor color = TileColor::BLACK;
-    auto it = tiles.find(position);
-    if (it != tiles.end())
-    {
-      color = (*it).second;
-    }
-
-    if (color == TileColor::BLACK)
-      IntProcessor::performProcessorInput(proc, modes, 0);
-    else
-      IntProcessor::performProcessorInput(proc, modes, 1);
+  void turnLeft() {
+    facing = (facing + 3) % 4;
   }
 
-  int outputState = 0;
-  void opOutput(IntProcessor* proc, int modes)
-  {
-    int64_t output = IntProcessor::performProcessorOutput(proc, modes);
+  void turnRight() {
+    facing = (facing + 5) % 4;
+  }
 
-    if (outputState == 0)
-    {
-      TileColor paintColor = ((output == 0) ? TileColor::BLACK : TileColor::WHITE);
-      auto it = tiles.find(position);
-      if (it == tiles.end())
-        paintedAtLeastOnce++;
-
-      tiles[position] = paintColor;
-
-      outputState = 1;
-    }
-    else
-    {
-      facing += (output == 0) ? -1 : 1;
-      if (facing < 0)
-        facing += 4;
-      else if (facing > 3)
-        facing -= 4;
-
-      switch (facing) {
-      case UP:
-        position.y--;
-        break;
-      case LEFT:
-        position.x--;
-        break;
-      case DOWN:
-        position.y++;
-        break;
-      case RIGHT:
-        position.x++;
-        break;
-      }
-
-      // std::cout << "Position (" << position.x << "|" << position.y << ")" << std::endl;
-
-      outputState = 0;
+  void move() {
+    switch (facing) {
+    case UP:
+      position.y -= 1;
+      break;
+    case DOWN:
+      position.y += 1;
+      break;
+    case LEFT:
+      position.x -= 1;
+      break;
+    case RIGHT:
+      position.x += 1;
+      break;
     }
   }
 };
@@ -117,15 +79,36 @@ void Day11::runPart1(void* input)
 {
   std::vector<int>* vector = (std::vector<int>*)input;
 
+  unsigned int paintedAtLeastOnce = 0;
+
   HullRobot robot;
   IntProcessor proc(vector->data(), vector->size(), 1024);
+  
+  int64_t paintColor;
+  int64_t turnDirection;
+  while (!proc.isHalted())
+  {
+    auto tileIt = robot.tiles.find(robot.position);
+    if (tileIt == robot.tiles.end()) {
+      paintedAtLeastOnce++;
+      robot.tiles[robot.position] = 0;
+    }
 
-  proc.registerInstruction(IntProcessor::OP_INPUT, std::bind(&HullRobot::opInput, &robot, std::placeholders::_1, std::placeholders::_2));
-  proc.registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&HullRobot::opOutput, &robot, std::placeholders::_1, std::placeholders::_2));
+    proc << robot.tiles[robot.position];
+    proc >> paintColor >> turnDirection;
 
-  proc.runProgram();
+    robot.tiles[robot.position] = paintColor;
+    if (turnDirection == 0)
+      robot.turnLeft();
+    else if (turnDirection == 1)
+      robot.turnRight();
+    else
+      std::cout << "Confused screaming: " << turnDirection << std::endl;
 
-  std::cout << "Painted tiles: " << robot.paintedAtLeastOnce << std::endl;
+    robot.move();
+  }
+
+  std::cout << "Painted tiles: " << paintedAtLeastOnce << std::endl;
   int minX = INT_MAX;
   int maxX = INT_MIN;
   int minY = INT_MAX;
@@ -145,14 +128,14 @@ void Day11::runPart1(void* input)
   if (robot.tiles.size() == 0)
     return;
 
-  for (int y = minY; y < maxY; y++) {
-    for (int x = minX; x < maxX; x++) {
+  for (int y = minY; y <= maxY; y++) {
+    for (int x = minX; x <= maxX; x++) {
       auto it = robot.tiles.find(Position{ x, y });
       char c;
       if (it == robot.tiles.end())
         c = ' ';
       else
-        c = it->second == TileColor::BLACK ? '.' : '#';
+        c = it->second == 0 ? '.' : '#';
 
       std::cout << c;
     }
@@ -166,18 +149,27 @@ void Day11::runPart2(void* input)
   std::vector<int>* vector = (std::vector<int>*)input;
 
   HullRobot robot;
-  robot.tiles[Position{ 0, 0 }] = TileColor::WHITE;
+  robot.tiles[robot.position] = 1;
   IntProcessor proc(vector->data(), vector->size(), 1024);
 
-  proc.registerInstruction(IntProcessor::OP_INPUT, std::bind(&HullRobot::opInput, &robot, std::placeholders::_1, std::placeholders::_2));
-  proc.registerInstruction(IntProcessor::OP_OUTPUT, std::bind(&HullRobot::opOutput, &robot, std::placeholders::_1, std::placeholders::_2));
+  int64_t paintColor;
+  int64_t turnDirection;
+  while (!proc.isHalted())
+  {    
+    proc << robot.tiles[robot.position];
+    proc >> paintColor >> turnDirection;
 
-  proc.runProgram();
+    robot.tiles[robot.position] = paintColor;
+    if (turnDirection == 0)
+      robot.turnLeft();
+    else if (turnDirection == 1)
+      robot.turnRight();
+    else
+      std::cout << "Confused screaming: " << turnDirection << std::endl;
 
-  std::cout << "OP: " << *(proc.getPC()) << std::endl;
+    robot.move();
+  }
 
-  std::cout << "PT: " << robot.paintedAtLeastOnce << std::endl;
-  
   int minX = INT_MAX;
   int maxX = INT_MIN;
   int minY = INT_MAX;
@@ -197,14 +189,14 @@ void Day11::runPart2(void* input)
   if (robot.tiles.size() == 0)
     return;
 
-  for (int y = minY; y < maxY; y++) {
-    for (int x = minX; x < maxX; x++) {
+  for (int y = minY; y <= maxY; y++) {
+    for (int x = minX; x <= maxX; x++) {
       auto it = robot.tiles.find(Position{ x, y });
       char c;
       if (it == robot.tiles.end())
         c = ' ';
       else
-        c = it->second == TileColor::BLACK ? '.' : '#';
+        c = it->second == 0 ? '.' : '#';
 
       std::cout << c;
     }

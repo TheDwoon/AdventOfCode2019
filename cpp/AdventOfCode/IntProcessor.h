@@ -56,8 +56,8 @@ public:
   bool isHalted();
   void suspend(bool suspend = true);
 
-  friend static IntProcessor& operator<< (IntProcessor& proc, int64_t input);
-  friend static IntProcessor& operator>> (IntProcessor& proc, int64_t& output);
+  friend IntProcessor& operator<< (IntProcessor& proc, int64_t input);
+  friend IntProcessor& operator>> (IntProcessor& proc, int64_t& output);
 
   static void performProcessorInput(IntProcessor* proc, int modes, int64_t input);
   static int64_t performProcessorOutput(IntProcessor* proc, int modes);
