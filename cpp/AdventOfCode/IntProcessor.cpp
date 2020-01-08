@@ -337,7 +337,6 @@ void IntProcessor::suspend(bool suspend)
   m_suspended = suspend;
 }
 
-
 void IntProcessor::performProcessorInput(IntProcessor* proc, int modes, int64_t input)
 {
   int modeA = proc->getMode(modes, 0);

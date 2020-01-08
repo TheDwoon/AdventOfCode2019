@@ -4,3 +4,5 @@ AdventOfCode.vcxproj.filters
 x64/
 Debug/
 Release/
+packages/
+

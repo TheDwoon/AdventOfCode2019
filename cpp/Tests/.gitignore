@@ -1,0 +1,8 @@
+.vs/
+Tests.vcxproj.user
+Tests.vcxproj.filters
+x64/
+Debug/
+Release/
+packages/
+
