@@ -27,55 +27,14 @@ void Day13::runPart1(void* input)
 {
   std::vector<int>* vector = (std::vector<int>*)input;
 
-  const int screenWidth = 39;
-  const int screenHeight = 21;
-  short screen[screenHeight][screenWidth];
-  for (int y = 0; y < screenHeight; y++) {
-    for (int x = 0; x < screenWidth; x++) {
-      screen[y][x] = 0;
-    }
-  }
-
   IntProcessor proc(vector->data(), vector->size(), 1024);
+
   int64_t x, y, tileId;
   int blocksOnScreen = 0;
   while (!proc.isHalted() || proc.isOutputReady()) {
     proc >> x >> y >> tileId;
     if (tileId == 2)
       blocksOnScreen++;
-
-    screen[y][x] = tileId;
-  }
-
-  for (int y = 0; y < screenHeight; y++) {
-    for (int x = 0; x < screenWidth; x++) {
-      short v = screen[y][x];
-      char c;
-      switch (v) {
-      case 0:
-        c = ' ';
-        break;
-      case 1:
-        c = '#';
-        break;
-      case 2:
-        c = 'X';
-        break;
-      case 3:
-        c = '-';
-        break;
-      case 4:
-        c = '*';
-        break;
-      default:
-        c = '?';
-        break;
-      }
-
-      std::cout << c;
-    }
-
-    std::cout << std::endl;
   }
 
   std::cout << "Block on screen: " << blocksOnScreen << std::endl;
@@ -83,4 +42,41 @@ void Day13::runPart1(void* input)
 
 void Day13::runPart2(void* input)
 {
+  std::vector<int>* vector = (std::vector<int>*)input;
+  (*vector)[0] = 2;
+
+  IntProcessor proc(vector->data(), vector->size(), 1024);
+
+  int64_t x, y, tileId;
+  int64_t score = 0;
+  int64_t ballX = 0;
+  int64_t playerX = 0;
+
+  while (!proc.isHalted()) {
+    proc.runProgram();
+
+    while (proc.isOutputReady()) {
+      proc >> x >> y >> tileId;
+      if (x == -1) {
+        score = tileId;
+      }
+      else {
+        if (tileId == 3) {
+          playerX = x;
+        }
+        else if (tileId == 4) {
+          ballX = x;
+        }
+      }
+    }
+
+    if (ballX < playerX)
+      proc << -1;
+    else if (ballX > playerX)
+      proc << 1;
+    else
+      proc << 0;
+  }
+
+  std::cout << "Score: " << score << std::endl;
 }
