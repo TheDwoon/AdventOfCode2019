@@ -322,6 +322,11 @@ void IntProcessor::setRelativeBase(int64_t* relativeBase)
   m_relativeBase = relativeBase;
 }
 
+bool IntProcessor::isOutputReady()
+{
+  return m_outputs.size() > 0;
+}
+
 bool IntProcessor::isSuspended()
 {
   return m_suspended;

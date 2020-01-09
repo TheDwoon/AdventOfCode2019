@@ -52,6 +52,7 @@ public:
   int64_t* getRelativeBase();
   void setRelativeBase(int64_t* relativeBase);
 
+  bool isOutputReady();
   bool isSuspended();
   bool isHalted();
   void suspend(bool suspend = true);
