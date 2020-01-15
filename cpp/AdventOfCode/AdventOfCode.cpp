@@ -10,6 +10,7 @@
 #include "Day11.h"
 #include "Day13.h"
 #include "Day15.h"
+#include "Day17.h"
 
 int main()
 {
@@ -38,13 +39,15 @@ int main()
   Day11 day11;
   day11.runDay();
   
-
   std::cout << " >>>>>>>>>>>> Day 13 <<<<<<<<<<" << std::endl;
   Day13 day13;
   day13.runDay();
-  */
-
+  
   std::cout << " >>>>>>>>>>>> Day 15 <<<<<<<<<<" << std::endl;
   Day15 day15;
   day15.runDay();
+  */
+  std::cout << " >>>>>>>>>>>> Day 17 <<<<<<<<<<" << std::endl;
+  Day17 day17;
+  day17.runDay();
 }
