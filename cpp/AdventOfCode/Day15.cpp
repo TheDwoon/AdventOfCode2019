@@ -105,6 +105,68 @@ void Day15::runPart2(void* input)
   std::vector<int>* vector = (std::vector<int>*)input;
 
   IntProcessor proc(vector->data(), vector->size(), 1024);
+  int64_t out;
+
+  Map map(50, 50);
+  Position position(map.width / 2, map.height / 2);
+  map.set(position.x, position.y, 1);
+
+  int tX, tY;
+
+  std::deque<short> path = findPath(map, position.x, position.y, 3);
+  while (!path.empty()) {
+    proc << path.front();
+    Position nextPosition;
+    switch (path.front()) {
+    case 1:
+      nextPosition = position.north();
+      break;
+    case 2:
+      nextPosition = position.south();
+      break;
+    case 3:
+      nextPosition = position.west();
+      break;
+    case 4:
+      nextPosition = position.east();
+      break;
+    }
+
+    path.pop_front();
+    proc >> out;
+
+    map.set(nextPosition.x, nextPosition.y, out);
+    if (out == 0) {
+      path.clear();
+    }
+    else {
+      position = nextPosition;
+    }
+
+    if (out == 2) {
+      tX = position.x;
+      tY = position.y;
+    }
+    
+    // if path is empty try to get to unknown terrain
+    if (path.empty()) {
+      path = findPath(map, position.x, position.y, 3);
+    }
+  }
+
+  // search an inrechable object will count steps to every location
+  findPath(map, tX, tY, -1);
+  int max = 0;
+  for (int y = 0; y < map.height; y++) {
+    for (int x = 0; x < map.width; x++) {
+      short steps = map.getPathing(x, y);
+      if (steps < SHRT_MAX && steps > max) {
+        max = steps;
+      }
+    }
+  }
+
+  std::cout << "Max: " << max << std::endl;
 }
 
 void Day15::printMap(Map& map)
